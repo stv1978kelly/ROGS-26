@@ -442,9 +442,12 @@
       table-layout: fixed;
     }
     .score-grid th {
-      font-size: 0.6em;
-      padding: 7px 0;
+      font-size: 0.65em;
+      padding: 8px 0;
       letter-spacing: 0;
+    }
+    .score-grid th:first-child {
+      width: 32px;
     }
     .score-grid th.hole-col {
       width: auto;
@@ -455,18 +458,18 @@
       min-width: unset;
     }
     .score-grid td:first-child {
-      font-size: 0.7em;
-      padding: 6px 4px;
-      width: 40px;
-      min-width: 40px;
+      font-size: 0.6em;
+      padding: 6px 2px;
+      width: 32px;
+      min-width: 32px;
     }
     .score-grid td:last-child {
       min-width: unset;
-      font-size: 0.9em;
+      font-size: 0.95em;
     }
     .score-grid input[type="number"] {
-      padding: 9px 1px;
-      font-size: 0.9em;
+      padding: 12px 0;
+      font-size: 1em;
     }
 
     .totals-bar {
@@ -490,8 +493,9 @@
     body { padding: 3px; }
     .card-body { padding: 10px 6px 16px; }
     .score-grid th { font-size: 0.55em; }
-    .score-grid input[type="number"] { font-size: 0.8em; padding: 8px 0; }
-    .score-grid td:first-child { font-size: 0.65em; padding: 5px 2px; width: 32px; min-width: 32px; }
+    .score-grid th:first-child { width: 28px; }
+    .score-grid input[type="number"] { font-size: 0.9em; padding: 10px 0; }
+    .score-grid td:first-child { font-size: 0.55em; padding: 5px 1px; width: 28px; min-width: 28px; }
   }
 </style>
 </head>
