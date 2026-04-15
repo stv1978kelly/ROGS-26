@@ -173,13 +173,13 @@
   }
 
   .score-grid th.hole-col {
-    width: 60px;
-    min-width: 60px;
+    width: auto;
+    min-width: 40px;
   }
 
   .score-grid th.total-col {
-    width: 80px;
-    min-width: 80px;
+    width: auto;
+    min-width: 50px;
   }
 
   .score-grid td {
@@ -426,14 +426,72 @@
 
   /* Responsive */
   @media (max-width: 700px) {
-    body { padding: 10px; }
-    .header { padding: 20px; }
-    .header h1 { font-size: 1.5em; }
-    .card-body { padding: 16px; }
-    .info-row { flex-direction: column; gap: 14px; }
-    .score-grid th, .score-grid td { font-size: 0.75em; }
-    .score-grid input[type="number"] { padding: 8px 2px; font-size: 0.9em; }
-    .totals-bar { flex-direction: column; align-items: center; gap: 10px; }
+    body { padding: 6px; }
+    .header { padding: 16px 12px; border-radius: 10px 10px 0 0; }
+    .header h1 { font-size: 1.6em; letter-spacing: 1px; }
+    .header .subtitle { font-size: 0.75em; letter-spacing: 2px; }
+    .golf-icon { font-size: 1.2em; margin: 0 4px; }
+    .card-body { padding: 14px 10px 20px; border-radius: 0 0 10px 10px; }
+    .info-row { flex-direction: column; gap: 12px; }
+    .info-group select, .info-group input[type="date"] { padding: 10px 12px; font-size: 0.9em; }
+    .section-label span { font-size: 1.1em; }
+
+    /* Score grid - make it fit on mobile */
+    .score-grid {
+      width: 100%;
+      table-layout: fixed;
+    }
+    .score-grid th {
+      font-size: 0.6em;
+      padding: 7px 0;
+      letter-spacing: 0;
+    }
+    .score-grid th.hole-col {
+      width: auto;
+      min-width: unset;
+    }
+    .score-grid th.total-col {
+      width: auto;
+      min-width: unset;
+    }
+    .score-grid td:first-child {
+      font-size: 0.7em;
+      padding: 6px 4px;
+      width: 40px;
+      min-width: 40px;
+    }
+    .score-grid td:last-child {
+      min-width: unset;
+      font-size: 0.9em;
+    }
+    .score-grid input[type="number"] {
+      padding: 9px 1px;
+      font-size: 0.9em;
+    }
+
+    .totals-bar {
+      flex-direction: row;
+      justify-content: center;
+      gap: 24px;
+      padding: 14px 12px;
+    }
+    .total-box .value { font-size: 1.5em; }
+    .total-box .label { font-size: 0.6em; }
+
+    .declaration-text { font-size: 0.9em; padding: 12px 14px; }
+    .actions { gap: 10px; }
+    .btn { padding: 12px 20px; font-size: 0.85em; }
+
+    .duplicate-warning { font-size: 0.8em; padding: 10px 14px; }
+  }
+
+  /* Extra small screens (below 380px) */
+  @media (max-width: 380px) {
+    body { padding: 3px; }
+    .card-body { padding: 10px 6px 16px; }
+    .score-grid th { font-size: 0.55em; }
+    .score-grid input[type="number"] { font-size: 0.8em; padding: 8px 0; }
+    .score-grid td:first-child { font-size: 0.65em; padding: 5px 2px; width: 32px; min-width: 32px; }
   }
 </style>
 </head>
