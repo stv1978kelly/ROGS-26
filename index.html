@@ -630,6 +630,9 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Hidden iframe for form submission (avoids CORS issues with Google Apps Script) -->
+<iframe name="submitFrame" id="submitFrame" style="display:none;"></iframe>
+
 <script>
   // ╔══════════════════════════════════════════════════════════════╗
   // ║  CONFIGURATION - Paste your Google Apps Script URL below    ║
@@ -639,15 +642,7 @@
 
   // ── Track existing submissions to warn about duplicates ──
   let existingSubmissions = [];
-
-  // ── Load existing submissions on page load ──
-  (function loadExisting() {
-    if (!WEBAPP_URL || WEBAPP_URL.includes("PASTE_YOUR")) return;
-    fetch(WEBAPP_URL + "?action=getSubmissions")
-      .then(r => r.json())
-      .then(data => { existingSubmissions = data || []; })
-      .catch(() => {});  // Silently fail - not critical
-  })();
+  let submitPending = false;
 
   // ── Prevent submitter selecting the same name as the player ──
   document.getElementById('playerName').addEventListener('change', function() {
@@ -731,6 +726,19 @@
     document.getElementById('spinnerOverlay').classList.toggle('active', busy);
   }
 
+  // ── Listen for the hidden iframe to load (means Google finished processing) ──
+  document.getElementById('submitFrame').addEventListener('load', function() {
+    if (!submitPending) return;
+    submitPending = false;
+    setSubmitting(false);
+    showToast('Score card submitted successfully!', 'success');
+
+    // Flash the totals bar green
+    const bar = document.getElementById('totalsBar');
+    bar.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+    setTimeout(() => { bar.style.background = ''; }, 2500);
+  });
+
   function submitCard() {
     // ── Validate ──
     if (WEBAPP_URL.includes("PASTE_YOUR")) {
@@ -753,46 +761,64 @@
       }
     }
 
-    // ── Gather data ──
-    const data = {
-      player: player,
-      course: course,
-      submittedBy: submitter,
-      date: playDate,
-      scores: {}
-    };
+    // ── Gather score data ──
+    const scores = {};
     for (let i = 1; i <= 18; i++) {
-      data.scores['hole' + i] = parseInt(document.getElementById('h' + i).value);
+      scores['hole' + i] = parseInt(document.getElementById('h' + i).value);
     }
 
-    // ── Submit to Google Apps Script ──
+    // ── Build and submit a hidden form (bypasses CORS completely) ──
     setSubmitting(true);
+    submitPending = true;
 
-    fetch(WEBAPP_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(data)
-    })
-    .then(() => {
-      // With no-cors we can't read the response, but if we get here
-      // the request was sent successfully to Google
-      setSubmitting(false);
-      showToast('Score card submitted for ' + player + '!', 'success');
+    // Remove any previous hidden form
+    const oldForm = document.getElementById('hiddenSubmitForm');
+    if (oldForm) oldForm.remove();
 
-      // Flash the totals bar green
-      const bar = document.getElementById('totalsBar');
-      bar.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-      setTimeout(() => { bar.style.background = ''; }, 2500);
+    // Create a form that posts to the Apps Script via the hidden iframe
+    const form = document.createElement('form');
+    form.id = 'hiddenSubmitForm';
+    form.method = 'POST';
+    form.action = WEBAPP_URL;
+    form.target = 'submitFrame';
+    form.style.display = 'none';
 
-      // Add to local tracking so duplicate check works
-      existingSubmissions.push({ player: player, course: course });
-    })
-    .catch(err => {
-      setSubmitting(false);
-      showToast('Network error - check your connection and try again.', 'error');
-      console.error('Submit error:', err);
-    });
+    // Add all data as hidden fields
+    function addField(name, value) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    addField('player', player);
+    addField('course', course);
+    addField('submittedBy', submitter);
+    addField('date', playDate);
+
+    // Add each hole score as a separate field
+    for (let i = 1; i <= 18; i++) {
+      addField('hole' + i, scores['hole' + i]);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // Add to local duplicate tracking
+    existingSubmissions.push({ player: player, course: course });
+
+    // Safety timeout in case iframe load event doesn't fire
+    setTimeout(() => {
+      if (submitPending) {
+        submitPending = false;
+        setSubmitting(false);
+        showToast('Score card sent for ' + player + '! Check your Google Sheet.', 'success');
+        const bar = document.getElementById('totalsBar');
+        bar.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+        setTimeout(() => { bar.style.background = ''; }, 2500);
+      }
+    }, 8000);
   }
 
   function resetCard() {
