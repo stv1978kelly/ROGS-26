@@ -918,6 +918,7 @@ document.getElementById('submitFrame').addEventListener('load', function() {
   submitPending = false;
   setSubmitting(false);
   showToast('Score card submitted successfully!', 'success');
+  setTimeout(resetCardSilent, 1500);
   const bar = document.getElementById('totalsBar');
   bar.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
   setTimeout(() => { bar.style.background = ''; }, 2500);
@@ -977,11 +978,21 @@ function submitCard() {
       submitPending = false;
       setSubmitting(false);
       showToast('Score card sent! Check your Google Sheet.', 'success');
+      setTimeout(resetCardSilent, 1500);
       const bar = document.getElementById('totalsBar');
       bar.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
       setTimeout(() => { bar.style.background = ''; }, 2500);
     }
   }, 8000);
+}
+
+function resetCardSilent() {
+  document.getElementById('playerName').value = '';
+  document.getElementById('coursePlayed').value = '';
+  document.getElementById('submittedBy').value = '';
+  document.getElementById('playDate').value = '';
+  document.getElementById('duplicateWarning').style.display = 'none';
+  renderCourse('');
 }
 
 function resetCard() {
