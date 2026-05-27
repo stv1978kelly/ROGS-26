@@ -454,10 +454,6 @@
           <option>Chaparral</option>
         </select>
       </div>
-      <div class="info-group">
-        <label>Date</label>
-        <input type="date" id="playDate" />
-      </div>
     </div>
 
     <!-- Course banner (shows when course selected) -->
@@ -930,7 +926,6 @@ function submitCard() {
   const player = document.getElementById('playerName').value;
   const course = document.getElementById('coursePlayed').value;
   const submitter = document.getElementById('submittedBy').value;
-  const playDate = document.getElementById('playDate').value;
 
   if (!player || !course) { showToast('Please select a player and course.', 'error'); return; }
   if (!submitter) { showToast('Please select who is submitting this card.', 'error'); return; }
@@ -964,7 +959,6 @@ function submitCard() {
   addField('player', player);
   addField('course', course);
   addField('submittedBy', submitter);
-  addField('date', playDate);
   for (let i = 1; i <= 18; i++) {
     addField('hole' + i, document.getElementById('h' + i).value);
   }
@@ -990,7 +984,6 @@ function resetCardSilent() {
   document.getElementById('playerName').value = '';
   document.getElementById('coursePlayed').value = '';
   document.getElementById('submittedBy').value = '';
-  document.getElementById('playDate').value = '';
   document.getElementById('duplicateWarning').style.display = 'none';
   renderCourse('');
 }
@@ -1000,14 +993,12 @@ function resetCard() {
   document.getElementById('playerName').value = '';
   document.getElementById('coursePlayed').value = '';
   document.getElementById('submittedBy').value = '';
-  document.getElementById('playDate').value = '';
   document.getElementById('duplicateWarning').style.display = 'none';
   renderCourse('');
   showToast('Score card cleared.', 'info');
 }
 
 // ── Init ──
-document.getElementById('playDate').valueAsDate = new Date();
 buildDefaultHalf('front9body', 1);
 buildDefaultHalf('back9body', 10);
 bindInputListeners();
